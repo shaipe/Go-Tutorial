@@ -18,6 +18,18 @@ Mac平台下载pkg文件根据提示安装
 
 此包应该会将 /usr/local/go/bin 目录放到你的 PATH 环境变量中。 要使此更改生效，你需要重启所有打开的终端回话。
 
+**工作区环境设置**
+```bash
+vim ~/.bash_profile
+
+# 添加入下代码
+export GOPATH=/Users/UserName/workDir 
+# UserName为计算机登录用户名, workDir为想要设置的go语言的工作空间目录
+
+# 让配置生效
+source ~/.bash_profile
+```
+
 #### Windows Msi安装
 打开此MSI文件 并跟随提示来安装Go工具。默认情况下，该安装程序会将Go发行版放到 c:\Go 中。
 
@@ -50,6 +62,8 @@ hello, world
 
 ```
 
-## 相关资料
+## 相关学习资料
 
-[Go语言中文文档](http://docscn.studygolang.com/doc/)
+- [Go语言中文文档](http://docscn.studygolang.com/doc/)
+- [Go语言圣经中文版](https://docs.hacknode.org/gopl-zh/index.html)
+
