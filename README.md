@@ -81,6 +81,7 @@ export PATH=$PATH:$GOROOT/bin/:$GOPATH/bin:$GOBIN
 
 ```bash
 source <某个profile文件>
+# 执行完后在任一目录下,输入go version 查看是否显示开始执行以上命令相同的显示即可验证是否安装正确
 ```
 
 #### 测试你的安装
