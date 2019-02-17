@@ -36,6 +36,53 @@ source ~/.bash_profile
 此安装程序应该会将 c:\Go\bin 目录放到你的 PATH 环境变量中。 要使此更改生效，你需要重启所有打开的命令行。
 Windows平台可以下载msi文件根据提示进行安装,windows平台安装完成以后需要重启系统,系统的环境变量才会生效
 
+#### Linux 安装
+
+到go语言的官方网站下载最新版本的二进制文件[Go语言官方下载地址](http://golang.org/dl)选择下载对应的操作系统以及cpu架构,如(centos_amd64)表示为Centos操作系统,amd64架构
+
+比如下载以下文件: https://dl.google.com/go/go1.11.5.linux-armv6l.tar.gz
+
+1. 使用tar命令进持解析,官方建议解压到/usr/local目录下
+```bash
+tar -zxf go1.11.5.linux-armv6l.tar.gz -C /usr/local
+# 具命令执行需要使用root权限
+```
+2. 进入/usr/local 目录查看是否有 `go` 目录
+```bash
+# 进入local目录
+cd /usr/local
+# 查看local目录下的文件或目录
+ls
+# 进入go目录
+cd go
+# 运行go命令查看当前go的版本信息
+go version
+# go version go1.11.5 linux/amd64 显示以上信息表示正确
+```
+
+3. 环境变量的设置
+
+**GOROOT, GOPATH, GOBIN, PATH**
+为了让每次启动机器让这些环境变量都生效,可以把这信息添加到`profile' 中, (``~/.bash_profile``<单一用户> 或 ``/etc/profile``<所有用户>)
+添加内容:
+
+```shell
+# 设置go开发环境的根目录到环境变量
+export GOROOT=/usr/local/go
+# 设置go语言的工作区目录,下面是设置了二个工作区目录
+export GOPATH=~/workspace/go:~/goproject
+# GOBIN 是存放编译后的可执行文件目录
+export GOBIN=~/gobin
+# 为了方便使用GO命令和go程序可执行文件在系统的任何目录下输入命令都可以执行编译安装好的可以执行文件
+export PATH=$PATH:$GOROOT/bin/:$GOPATH/bin:$GOBIN
+# 注意此处必须在原PATH上进行追加... 
+```
+4. 让配置环境变量生效
+
+```bash
+source <某个profile文件>
+```
+
 #### 测试你的安装
 
 通过构建一个简单的程序来检查Go的安装是否正确，具体操作如下：
