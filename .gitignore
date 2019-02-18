@@ -1,4 +1,7 @@
 # misc
 .DS_Store
+/.idea/
+.idea
+.idea/
 
 git.sh
