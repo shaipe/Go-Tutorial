@@ -5,15 +5,17 @@
     <title>Title</title>
 </head>
 <body>
-<h1>{{.PageTitle}}<h1>
-        <ul>
-            {{range .Todos}}
-                {{if .Done}}
-                    <li class="done">{{.Title}}</li>
-                {{else}}
-                    <li>{{.Title}}</li>
-                {{end}}
+    {{template "header" .}}
+    <h1>{{.PageTitle}}<h1>
+    <ul>
+        {{range .Todos}}
+            {{if .Done}}
+                <li class="done">{{.Title}}</li>
+            {{else}}
+                <li>{{.Title}}</li>
             {{end}}
-        </ul>
+        {{end}}
+    </ul>
+    {{template "footer" .}}
 </body>
 </html>

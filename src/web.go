@@ -34,7 +34,9 @@ func sayHello(w http.ResponseWriter, r *http.Request){
 	从文本模板中输出内容
  */
 func renderTemplate(w http.ResponseWriter, r *http.Request){
-	tmpl, err := template.ParseFiles("src/template/index.html")
+	tmpl, err := template.ParseFiles("src/template/index.html",
+		"src/template/header.html",
+		"src/template/footer.html")
 
 	if err != nil {
 		errStr := err.Error()
