@@ -11,7 +11,7 @@ package main
 		2. mkdir -p golang.org/x # 批量创建包对应的目录
 		3. git clone https://github.com/golang/net	# 从git上获取包源码, golang.org提供的包在github上的地址为: https://github.com/golang
 		4. git install net	# 把下载好的源码进行安装
-		5. git test golang.org/x/net/html	# 测试包是否安装成功
+		5. git demo golang.org/x/net/html	# 测试包是否安装成功
 
 		通过以上5个步骤可以完成golang.org/x/net包的安装,并测试其中的html包是否可用,接下来安装 goquery 包
 

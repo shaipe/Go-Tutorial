@@ -57,7 +57,7 @@ if err != nil {
 fmt.Println("Connected to MongoDB!")
 
 # 获取一个文档集
-collection := client.Database("test").Collection("trainers")
+collection := client.Database(demo).Collection("trainers")
 
 # 断开数据库连接
 err = client.Disconnect(context.TODO())
