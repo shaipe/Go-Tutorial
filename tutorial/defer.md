@@ -161,4 +161,7 @@ package mainimport (
         fmt.Println("over.")
         // （5）os.Exit(1) // defer 不会执行}
 ```
-    
+
+### 参考资料
+
+[defer-panic-and-recover](https://blog.golang.org/defer-panic-and-recover)

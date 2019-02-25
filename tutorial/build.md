@@ -54,3 +54,24 @@ go build [-o 输出名] [-i] [编译标记] [包名]
 注意
 
 构建遵守某些约定('go help gopath'),但不是所有的项目都遵循这些约定，当使用自己的惯例或使用单独的软件构建系统时可以选择使用较低级别的调用go tool compile和go tool link来避免一些构建工具的开销和设计决策
+
+## Cross Build 跨平台生成
+
+在mac上编译64位linux的命令编译命令
+```bash
+# bash:
+GOOS=linux GOARCH=amd64 go build hello.go
+```
+
+#### 参数解析
+这里用到了两个变量：
+    - GOOS：目标操作系统
+    - GOARCH：目标操作系统的架构
+
+参数值对照表
+OS|ARCH|OS version
+-|-|-
+linux|386 / amd64 / arm|>= Linux 2.6
+darwin|386 / amd64|OS X (Snow Leopard + Lion)
+freebsd|386 / amd64|>= FreeBSD 7
+windows|386 / amd64|>= Windows 2000
