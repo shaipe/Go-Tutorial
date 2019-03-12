@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"github.com/go-ini/ini"
@@ -41,7 +42,7 @@ type Task struct {
 	// 请求的url地址
 	Url string
 	// 请求数据
-	Data string
+	Data map[string] interface{}
 	// 请求方式
 	Method string
 	// 执行时间
@@ -71,10 +72,20 @@ func initConfig(cnfPath string)(tasks Tasks){
 
 		tm, _ := sec.Key("time").Time()
 
+		// 将post数据转换为字典
+		d := sec.Key("data").String()
+		var m map[string] interface{}
+		err = json.Unmarshal([]byte(d), &m)
+
+		if err != nil {
+			fmt.Println("Unmarshal failed, ", err)
+			return
+		}
+
 		t := Task{
 			Name: sec.Key("name").String(),
 			Url: sec.Key("url").String(),
-			Data: sec.Key("data").String(),
+			Data: m,
 			Method: sec.Key("method").String(),
 			ExecuteTime: tm,
 		}
