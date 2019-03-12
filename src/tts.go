@@ -44,7 +44,8 @@ type Task struct {
 	Data string
 	// 请求方式
 	Method string
-
+	// 执行时间
+	ExecuteTime time.Time
 }
 
 type Tasks []Task
@@ -68,11 +69,14 @@ func initConfig(cnfPath string)(tasks Tasks){
 			continue
 		}
 
+		tm, _ := sec.Key("time").Time()
+
 		t := Task{
 			Name: sec.Key("name").String(),
 			Url: sec.Key("url").String(),
 			Data: sec.Key("data").String(),
 			Method: sec.Key("method").String(),
+			ExecuteTime: tm,
 		}
 		tasks = append(tasks, t)
 	}
@@ -91,7 +95,6 @@ func loopWorker(tasks Tasks){
 			select {
 			case <- ticker.C:
 				i++
-
 				doWorker(i, tasks)
 			}
 		}
@@ -104,14 +107,16 @@ func doWorker(i int, tasks Tasks){
 
 	for _, val := range tasks{
 
+		fmt.Println(time.Now())
+		// continue
 		html, err := net.Fetch(val.Url, val.Method, val.Data, nil)
 		if err != nil{
 			log.Println(err)
 		}
-		log.Printf("do worker index [%v] name: %v, request result: %v  ;", i, val.Name, html)
+		log.Printf("do worker index [%v] name: [%v], request result: %v", i, val.Name, html)
 
 		// 停止2秒再执行
-		time.Sleep(2 * time.Second)
+		time.Sleep(20 * time.Second)
 	}
 	return
 
@@ -119,6 +124,8 @@ func doWorker(i int, tasks Tasks){
 
 // 程序启动入口
 func main(){
+
+	// fmt.Println(time.Time())
 
 	// 给定配置路径
 	confPath, _ := filepath.Abs(os.Args[1])
