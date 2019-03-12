@@ -1,0 +1,5 @@
+[task]
+name=overall
+url=http://172.16.1.66:8000/das/sch/overall
+data={databaseId:35}
+method=POST

@@ -3,31 +3,145 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/go-ini/ini"
+	"github.com/shaipe/tide/net"
 	"log"
 	"os"
+	"path/filepath"
 	"time"
 )
 
 /**
 	在linux下可以使用如下命令让应用在后台运行
 	nohup command &
+
+	可以通过log.SetFlags()自定议你想要表达的格式
+
+	设置输出目的地log.SetOutput()
+
+	os.OpenFile(*logFileName, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0666)这是创建log文件.
+
+	1如果log文件不存在，创建一个新的文件os.O_CREATE
+
+	2打开文件的读写os.O_RDWR
+
+	3将log信息写入到log文件，是继承到当前log文件，不是覆盖os.O_APPEND
+
+	3log文件的权限位0666（即所有用户可读写）
  */
 
 var (
 	logFileName = flag.String("log", "tts.log", "Log file name")
 )
 
+// 任务配置
+type Task struct {
+	// 任务名称
+	Name string
+	// 请求的url地址
+	Url string
+	// 请求数据
+	Data string
+	// 请求方式
+	Method string
+
+}
+
+type Tasks []Task
+
+
+// 初始化配置
+func initConfig(cnfPath string)(tasks Tasks){
+
+	cfg, err := ini.Load(cnfPath)
+
+	if err != nil{
+		log.Printf("config %v not found", cnfPath)
+	}
+
+	sects := cfg.Sections()
+
+	for k := range sects{
+		sec := sects[k]
+		// 排除默认
+		if sec.Name() == "DEFAULT" {
+			continue
+		}
+
+		t := Task{
+			Name: sec.Key("name").String(),
+			Url: sec.Key("url").String(),
+			Data: sec.Key("data").String(),
+			Method: sec.Key("method").String(),
+		}
+		tasks = append(tasks, t)
+	}
+	return
+}
+
+
+// 循环工作任务
+func loopWorker(tasks Tasks){
+	i := 0
+	ticker := time.NewTicker(3 * time.Second)
+	defer ticker.Stop()
+
+	//go func() {
+		for {
+			select {
+			case <- ticker.C:
+				i++
+
+				doWorker(i, tasks)
+			}
+		}
+	//}()
+
+}
+
+// 工作任务执行
+func doWorker(i int, tasks Tasks){
+
+	for _, val := range tasks{
+
+		html, err := net.Fetch(val.Url, val.Method, val.Data, nil)
+		if err != nil{
+			log.Println(err)
+		}
+		log.Printf("do worker index [%v] name: %v, request result: %v  ;", i, val.Name, html)
+
+		// 停止2秒再执行
+		time.Sleep(2 * time.Second)
+	}
+	return
+
+}
+
+// 程序启动入口
 func main(){
+
+	// 给定配置路径
+	confPath, _ := filepath.Abs(os.Args[1])
+	tasks := initConfig(confPath)
+	fmt.Println(tasks)
+
+	// flag.Parse()
+
+	// fmt.Println(*logFileName)
+
 	// 配置日志设置
 	setLog()
+
 	// 开始执行计划
-	loopWorker()
+	loopWorker(tasks)
 }
+
 
 // 设置日志记录
 func setLog(){
 	// 定义日志文件和创建日志文件
 	logFile, logErr := os.OpenFile(*logFileName, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0666)
+
 
 	// 日志文件创建判断
 	if logErr != nil {
@@ -43,35 +157,11 @@ func setLog(){
 
 }
 
-// 循环工作任务
-func loopWorker(){
-	i := 0
-	ticker := time.NewTicker(3 * time.Second)
-	defer ticker.Stop()
-
-	//go func() {
-		for {
-			select {
-			case <- ticker.C:
-				i++
-
-				doWorker(i)
-			}
-		}
-	//}()
-
-}
-
-
-// 工作任务执行
-func doWorker(i int){
-	time.Sleep(2 * time.Second)
-	log.Printf("start do worker i: %v ;", i)
-}
-
 
 func curl(url string){
 
 }
+
+
 
 
