@@ -49,11 +49,12 @@ type Task struct {
 	ExecuteTime time.Time
 }
 
-type Tasks []Task
 
 
 // 初始化配置
-func initConfig(cnfPath string)(tasks Tasks){
+func InitConfig(cnfPath string) []Task {
+
+	var tasks []Task
 
 	cfg, err := ini.Load(cnfPath)
 
@@ -79,7 +80,7 @@ func initConfig(cnfPath string)(tasks Tasks){
 
 		if err != nil {
 			fmt.Println("Unmarshal failed, ", err)
-			return
+			return tasks
 		}
 
 		t := Task{
@@ -91,12 +92,12 @@ func initConfig(cnfPath string)(tasks Tasks){
 		}
 		tasks = append(tasks, t)
 	}
-	return
+	return tasks
 }
 
 
 // 循环工作任务
-func loopWorker(tasks Tasks){
+func LoopWorker(tasks []Task){
 	i := 0
 	ticker := time.NewTicker(3 * time.Second)
 	defer ticker.Stop()
@@ -106,7 +107,7 @@ func loopWorker(tasks Tasks){
 			select {
 			case <- ticker.C:
 				i++
-				doWorker(i, tasks)
+				DoWorker(i, tasks)
 			}
 		}
 	//}()
@@ -114,7 +115,7 @@ func loopWorker(tasks Tasks){
 }
 
 // 工作任务执行
-func doWorker(i int, tasks Tasks){
+func DoWorker(i int, tasks []Task){
 
 	for _, val := range tasks{
 
@@ -140,23 +141,23 @@ func main(){
 
 	// 给定配置路径
 	confPath, _ := filepath.Abs(os.Args[1])
-	tasks := initConfig(confPath)
+	tasks := InitConfig(confPath)
 	fmt.Println(tasks)
 
-	// flag.Parse()
+	flag.Parse()
 
 	// fmt.Println(*logFileName)
 
 	// 配置日志设置
-	setLog()
+	SetLog()
 
 	// 开始执行计划
-	loopWorker(tasks)
+	LoopWorker(tasks)
 }
 
 
 // 设置日志记录
-func setLog(){
+func SetLog(){
 	// 定义日志文件和创建日志文件
 	logFile, logErr := os.OpenFile(*logFileName, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0666)
 
@@ -175,10 +176,6 @@ func setLog(){
 
 }
 
-
-func curl(url string){
-
-}
 
 
 

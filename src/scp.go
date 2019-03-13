@@ -27,22 +27,24 @@ type SSH struct {
 }
 
 type SCP struct {
-	host Host
-	localfile string
-	remotefile string
+	host       Host
+	localFile  string
+	remoteFile string
 }
 
+// 基于SSH对象扩展获取命令方法
 func (s SSH) GetCommand() string {
 	return fmt.Sprintf("ssh -p%s %s@%s '%s'", s.host.port, s.host.user, s.host.host, s.cmd)
 }
 
 func (s SCP) GetCommand() string {
-	return fmt.Sprintf("scp -r -P%s %s %s@%s:%s", s.host.port, s.localfile, s.host.user, s.host.host, s.remotefile)
+	return fmt.Sprintf("scp -r -P%s %s %s@%s:%s", s.host.port, s.localFile, s.host.user, s.host.host, s.remoteFile)
 }
 
-func ParseServers(filepath string) ([]Host, error) {
+// 解析服务器信息
+func ParseServers(filePath string) ([]Host, error) {
 	var hosts []Host
-	file, err := os.Open(filepath)
+	file, err := os.Open(filePath)
 	if err != nil {
 		return nil, err
 	}

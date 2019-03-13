@@ -335,3 +335,113 @@ func main() {
     fmt.Println(t.Get())
 }
 ```
+
+
+优秀的命名
+优秀的命名应当是一贯的、短小的、精确的。
+所谓一贯，就是说同一个意义在不同的环境下的命名应当一致，譬如依赖关系，不要在一个方法中命名为depend，另一个方法中命名为rely。
+所谓短小，不必多言，当命名过长的时候，读者可能更关注命名本身，而忽视真正的逻辑内容。
+所谓精确，就是命名达意、易于理解
+
+首条经验
+声明位置与使用位置越远，则命名应当越长。
+
+骆驼命名法
+Go语言应该使用 MixedCase
+(不要使用 names_with_underscores)
+首字母缩写词都应该用大写,譬如ServeHTTP、sceneID、CIDRProcessor。
+
+局部变量
+局部变量应当尽可能短小，譬如使用buf指代buffer，使用i指代index
+在很长的函数中可能会有很多的变量，这个时候可以适当使用一些长名字。
+但是写出这么长的函数，通常意味着代码需要重构了！🙅🏻‍
+
+参数
+函数的参数和局部变量类似，但是它们默认还具有文档的功能
+当参数类型具有描述性的时候，参数名就应该尽可能短小：
+
+func AfterFunc(d Duration, f func()) *Timer
+func Escape(w io.Writer, s []byte)
+当参数类型比较模糊的时候，参数名就应当具有文档的功能：
+
+func Unix(sec, nsec int64) Time
+func HasPrefix(s, prefix []byte) bool
+返回值
+在Go语言中，返回值可以定义名称的，它可以当做一种特殊的参数。
+尤其重要的是，在外部可见的函数中，返回值的名称应当可以作为文档参考。
+
+func Copy(dst Writer, src Reader) (written int64, err error)
+func ScanBytes(data []byte, atEOF bool) (advance int, token []byte,
+ err error)
+方法接收者（Receiver）
+方法接收者也是一种特殊的参数。Go语言中没有明显的面向对象的概念，可以对方法定义方法接收者来实现类似于对象的方法的概念。
+
+按照惯例，由于方法接收者在函数内部经常出现，因此它经常采用一两个字母来标识方法接收者的类型。
+
+func (b *Buffer) Read(p []byte) (n int, err error)
+func (sh serverHandler) ServeHTTP(rw ResponseWriter, req *Request)
+func (r Rectangle) Size() Point
+需要注意的是，方法接收者的名字在同一类型的不同方法中应该保持统一，这也是前文所述的一贯性的需求。
+
+导出包级别命名
+导出名被使用的时候通常是放在包名后
+所以，在导出变量、常数、函数和类型的时候，
+不要把包名的意义再写一遍
+
+比较好的名字
+bytes.Buffer strings.Reader
+
+比较蠢的名字
+bytes.ByteBuffer strings.StringReader
+
+接口类型
+只含有一个方法的接口类型通常以函数名加上er后缀作为名字
+
+type Reader interface {
+    Read(p []byte) (n int, err error)
+}
+有时候可能导致蹩脚的英文，但别管他，能看懂就好
+
+type Execer interface {
+    Exec(p []byte) (n int, err error)
+}
+有时候可以适当调整一下英文单词的顺序，增加可读性：
+
+type ByteReader interface {
+    ReadByte(p []byte) (n int, err error)
+}
+当接口含有多个方法的时候，还是要选取一个能够精准描述接口目的的名字，譬如net.Conn、http/ResponseWriter
+
+Error的命名
+Error类型应该写成FooError的形式
+
+type ExitError struct {
+	....
+}
+Error变量协程ErrFoo的形式
+
+var ErrFormat = errors.New("unknown format")
+包的命名
+应当与它导出代码的内容相关，避免util、common这种宽泛的命名
+
+引入路径
+包路径的最后一个单词应该和包名一致
+
+包路径应该尽可能简洁
+
+记得把库的主要代码直接放在代码库的根目录
+
+避免在包路径中使用任何大写字母（并非所有文件系统都区分大小写）
+
+标准库
+上述很多例子都是从标准库中来的
+
+标准库的很多内容都可以作为参考
+多看看标准库来寻求灵感吧
+
+但是要记住：
+
+当作者写标准库的时候，他们自己也在学习过程中。
+多数情况下作者是对的，但是偶尔还是会犯一些错误
+
+
