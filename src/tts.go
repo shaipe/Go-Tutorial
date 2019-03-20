@@ -8,11 +8,20 @@ import (
 	"github.com/shaipe/tide/net"
 	"log"
 	"os"
-	"path/filepath"
 	"time"
 )
 
 /**
+	运行:
+
+go run tts.go -c tts.cnf -log xxx.log
+build:
+linux: GOOS=linux GOARCH=amd64 go build tts.go
+windows: GOOS=windows GOARCH=amd64 go build tts.go
+build后:
+
+./tts -c tts.cnf -log xxx.log
+
 	在linux下可以使用如下命令让应用在后台运行
 	nohup command &
 
@@ -33,19 +42,20 @@ import (
 
 var (
 	logFileName = flag.String("log", "tts.log", "Log file name")
+	confPath = flag.String("c", "tts.cnf", "配置文件路径: 给定运行的配置信息")
 )
 
 // 任务配置
 type Task struct {
-	// 任务名称
+	// 任务名称: name
 	Name string
-	// 请求的url地址
+	// 请求的url地址: url
 	Url string
-	// 请求数据
+	// 请求数据: data
 	Data map[string] interface{}
-	// 请求方式
+	// 请求方式: method
 	Method string
-	// 执行时间
+	// 执行时间: time
 	ExecuteTime time.Time
 }
 
@@ -137,16 +147,16 @@ func DoWorker(i int, tasks []Task){
 // 程序启动入口
 func main(){
 
-	// fmt.Println(time.Time())
-
-	// 给定配置路径
-	confPath, _ := filepath.Abs(os.Args[1])
-	tasks := InitConfig(confPath)
-	fmt.Println(tasks)
-
 	flag.Parse()
 
 	// fmt.Println(*logFileName)
+	// return
+
+	// fmt.Println(time.Time())
+
+	// 给定配置路径
+	tasks := InitConfig(*confPath)
+	fmt.Println(tasks)
 
 	// 配置日志设置
 	SetLog()
