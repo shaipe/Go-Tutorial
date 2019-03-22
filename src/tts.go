@@ -81,7 +81,11 @@ func InitConfig(cnfPath string) []Task {
 			continue
 		}
 
-		tm, _ := sec.Key("time").Time()
+		// time layout 是代表: go语言2006开始策划, 后面分别为: 1,2,3,4,5   2006-01-02 15:04:05.999999999 -0700 MST
+		tmStr := sec.Key("time").String()
+		tmStr = time.Now().Format("2006-01-02") + " " + tmStr
+		//fmt.Println(tmStr)
+		tm, _ := time.Parse("2006-01-02 15:04:05", tmStr)
 
 		// 将post数据转换为字典
 		d := sec.Key("data").String()
@@ -108,40 +112,43 @@ func InitConfig(cnfPath string) []Task {
 
 // 循环工作任务
 func LoopWorker(tasks []Task){
-	i := 0
-	ticker := time.NewTicker(3 * time.Second)
-	defer ticker.Stop()
 
-	//go func() {
-		for {
-			select {
-			case <- ticker.C:
-				i++
-				DoWorker(i, tasks)
-			}
-		}
-	//}()
+	for _, task := range tasks{
+
+		start(task)
+
+	}
 
 }
 
-// 工作任务执行
-func DoWorker(i int, tasks []Task){
-
-	for _, val := range tasks{
-
-		fmt.Println(time.Now())
-		// continue
-		html, err := net.Fetch(val.Url, val.Method, val.Data, nil)
-		if err != nil{
-			log.Println(err)
+func start(task Task)  {
+	fmt.Println(task.Name, task.Url)
+	go func() {
+		fmt.Println("ewweewew")
+		for {
+			fmt.Println(task.Url)
+			go reqUrl(task.Name, task.Url, task.Method, task.Data)
+			now := time.Now()
+			next := task.ExecuteTime
+			if now.Before(next) {
+				next = next.Add(time.Hour * 24)
+			}
+			t := time.NewTimer(next.Sub(now))
+			<-t.C
 		}
-		log.Printf("do worker index [%v] name: [%v], request result: %v", i, val.Name, html)
+	}()
+}
 
-		// 停止2秒再执行
-		time.Sleep(20 * time.Second)
+
+func reqUrl(name, url, method string, data map[string] interface{}){
+	// continue
+	html, err := net.Fetch(url, method, data, nil)
+	if err != nil{
+		defer func() {
+			log.Println(err)
+		}()
 	}
-	return
-
+	log.Printf("do worker name: [%v], request result: %v", name, html)
 }
 
 // 程序启动入口
@@ -164,6 +171,8 @@ func main(){
 	// 开始执行计划
 	LoopWorker(tasks)
 }
+
+
 
 
 // 设置日志记录

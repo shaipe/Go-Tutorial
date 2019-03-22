@@ -102,8 +102,36 @@ func test3() {
 	}
 }
 
+
+func startTimer(f func()) {
+	go func() {
+		fmt.Println("etw")
+		for {
+			f()
+			now := time.Now()
+			// 计算下一个零点
+			next := now.Add(time.Hour * 24)
+			next = time.Date(next.Year(), next.Month(), next.Day(), 0, 0, 0, 0, next.Location())
+			t := time.NewTimer(next.Sub(now))
+			<-t.C
+		}
+	}()
+}
+
 func main() {
-	test1()
-	test2()
-	test3()
+
+	startTimer(func() {
+		fmt.Println("test")
+	})
+
+	return
+	n := time.Now()
+	next := n.Add(time.Hour * 24)
+	next = time.Date(next.Year(), next.Month(), next.Day(), 0, 0, 0, 0, next.Location())
+
+	fmt.Println(n, next)
+	fmt.Println(next.Sub(n))
+	// test1()
+	// test2()
+	// test3()
 }
