@@ -123,8 +123,8 @@ func LoopWorker(tasks []Task){
 
 func start(task Task)  {
 	fmt.Println(task.Name, task.Url)
-	go func() {
-		fmt.Println("ewweewew")
+	//go func() {
+		// fmt.Println("ewweewew")
 		for {
 			fmt.Println(task.Url)
 			go reqUrl(task.Name, task.Url, task.Method, task.Data)
@@ -136,7 +136,7 @@ func start(task Task)  {
 			t := time.NewTimer(next.Sub(now))
 			<-t.C
 		}
-	}()
+	//}()
 }
 
 
