@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/go-redis/redis"
 	"log"
+	"time"
 )
 
 func connect_redis() *redis.Client  {
@@ -11,6 +12,12 @@ func connect_redis() *redis.Client  {
 		Addr:     "192.168.4.136:6380",
 		Password: "366ec.redis", // no password set
 		DB:       0,  // use default DB
+		// Addr:         ":6379",
+		DialTimeout:  10 * time.Second,
+		ReadTimeout:  30 * time.Second,
+		WriteTimeout: 30 * time.Second,
+		PoolSize:     10,
+		PoolTimeout:  30 * time.Second,
 	})
 
 	return client
