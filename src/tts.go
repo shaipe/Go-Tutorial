@@ -63,7 +63,7 @@ type Task struct {
 
 // 初始化配置
 func InitConfig(cnfPath string) []Task {
-
+	// fmt.Println(confPath)
 	var tasks []Task
 
 	cfg, err := ini.Load(cnfPath)
@@ -122,17 +122,18 @@ func LoopWorker(tasks []Task){
 }
 
 func start(task Task)  {
-	fmt.Println(task.Name, task.Url)
+	//fmt.Println(task.Name, task.Url)
 	//go func() {
 		// fmt.Println("ewweewew")
 		for {
-			fmt.Println(task.Url)
+			// fmt.Println(task.Url)
 			go reqUrl(task.Name, task.Url, task.Method, task.Data)
 			now := time.Now()
 			next := task.ExecuteTime
-			if now.Before(next) {
+			if next.Before(now) {
 				next = next.Add(time.Hour * 24)
 			}
+			log.Printf("next excute: %v", next)
 			t := time.NewTimer(next.Sub(now))
 			<-t.C
 		}
@@ -141,6 +142,7 @@ func start(task Task)  {
 
 
 func reqUrl(name, url, method string, data map[string] interface{}){
+	log.Printf("request url: %v method: %v data: %v", url, method, data)
 	// continue
 	html, err := net.Fetch(url, method, data, nil)
 	if err != nil{
@@ -163,7 +165,7 @@ func main(){
 
 	// 给定配置路径
 	tasks := InitConfig(*confPath)
-	fmt.Println(tasks)
+	// fmt.Println(tasks)
 
 	// 配置日志设置
 	SetLog()

@@ -3,9 +3,10 @@
 /.idea/
 .idea
 .idea/
+build/
 
 *.idea
-
+*.zip
 git.sh
 
 *.log
