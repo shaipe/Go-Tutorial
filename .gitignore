@@ -10,3 +10,4 @@ build/
 git.sh
 
 *.log
+*.json
