@@ -8,6 +8,7 @@ import (
 	"github.com/shaipe/tide/net"
 	"log"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -47,6 +48,7 @@ var (
 
 // 任务配置
 type Task struct {
+
 	// 任务名称: name
 	Name string
 	// 请求的url地址: url
@@ -57,6 +59,11 @@ type Task struct {
 	Method string
 	// 执行时间: time
 	ExecuteTime time.Time
+	// 间隔
+	Interval int
+	// 重复定义, None-不重复, day-按天, hour-小时, minute-分, second-秒
+	Repeat string
+
 }
 
 
@@ -82,7 +89,7 @@ func InitConfig(cnfPath string) []Task {
 		}
 
 		// time layout 是代表: go语言2006开始策划, 后面分别为: 1,2,3,4,5   2006-01-02 15:04:05.999999999 -0700 MST
-		tmStr := sec.Key("time").String()
+		tmStr := sec.Key("executeTime").String()
 		tmStr = time.Now().Format("2006-01-02") + " " + tmStr
 		//fmt.Println(tmStr)
 		tm, _ := time.Parse("2006-01-02 15:04:05", tmStr)
@@ -97,13 +104,21 @@ func InitConfig(cnfPath string) []Task {
 			return tasks
 		}
 
+		interval, _ := sec.Key("interval").Int()
+
+		// 初始化任务对象
 		t := Task{
 			Name: sec.Key("name").String(),
 			Url: sec.Key("url").String(),
 			Data: m,
 			Method: sec.Key("method").String(),
 			ExecuteTime: tm,
+			Repeat: sec.Key("repeat").String(),
+			Interval: interval,
 		}
+
+		fmt.Println(t)
+
 		tasks = append(tasks, t)
 	}
 	return tasks
@@ -121,21 +136,46 @@ func LoopWorker(tasks []Task){
 
 }
 
+func getNext(task Task) time.Time {
+	fmt.Println(task)
+	// 获取当前时间
+	now := time.Now()
+	// 默认执行时间为下次执行时间
+	next := task.ExecuteTime
+
+	if next.Before(now){
+		switch strings.ToLower(task.Repeat) {
+		// 只执行一次
+		case "none":
+			next = now
+		case "day":
+			next = next.Add(time.Hour * 24)
+		case "hour":
+			next = now.Add(time.Hour * time.Duration(task.Interval))
+		case "minute":
+			next = now.Add(time.Minute * time.Duration(task.Interval))
+		case "second":
+			next = now.Add(time.Minute * time.Duration(task.Interval))
+		}
+	}
+	return next
+}
+
+// 启动
 func start(task Task)  {
 	//fmt.Println(task.Name, task.Url)
 	//go func() {
 		// fmt.Println("ewweewew")
 		for {
-			// fmt.Println(task.Url)
-			go reqUrl(task.Name, task.Url, task.Method, task.Data)
 			now := time.Now()
-			next := task.ExecuteTime
+			next := getNext(task)
 			if next.Before(now) {
-				next = next.Add(time.Hour * 24)
+				break
 			}
-			log.Printf("next excute: %v", next)
+			log.Printf("next execute: %v", next)
 			t := time.NewTimer(next.Sub(now))
-			<-t.C
+			<- t.C
+			go reqUrl(task.Name, task.Url, task.Method, task.Data)
 		}
 	//}()
 }
