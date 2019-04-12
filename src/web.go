@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 type Todo struct {
@@ -23,10 +24,24 @@ type TodoPageData struct {
 	Todos     []Todo
 }
 
+
+func sumWeb(x,y int,c chan int){
+	time.Sleep(5*time.Second)
+	c <- x + y
+}
+
+func anotherWeb(c chan int){
+	fmt.Println(<-c)      //管道有数据了直接继续执行，相当于异步通知
+	//do something else...
+}
+
 /**
 直接输出文本内容
  */
 func sayHello(w http.ResponseWriter, r *http.Request){
+	c := make (chan int)
+	go sumWeb(24,18,c)
+	go anotherWeb(c)
 	fmt.Fprintf(w, "我运行了")
 }
 
