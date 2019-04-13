@@ -212,6 +212,9 @@ func main(){
 
 	// 开始执行计划
 	LoopWorker(tasks)
+
+	// 禁止 main 函数退出
+	defer func() { select {} }()
 }
 
 
