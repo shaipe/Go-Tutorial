@@ -65,9 +65,9 @@ func renderTemplate(w http.ResponseWriter, r *http.Request){
 	data := TodoPageData{
 		PageTitle: "My TODO list",
 		Todos: []Todo{
-			{Title: "Task 1", Done: false},
-			{Title: "Task 2", Done: true},
-			{Title: "Task 3", Done: true},
+			{Title: "Task2 1", Done: false},
+			{Title: "Task2 2", Done: true},
+			{Title: "Task2 3", Done: true},
 		},
 	}
 	tmpl.Execute(w, data)
