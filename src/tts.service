@@ -1,0 +1,15 @@
+[Unit]
+Description=tts - 定时处理任务工具
+After=network.target nss-lookup.target
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/tts
+ExecReload=/usr/bin/tts -s=reload
+ExecStop=/usr/bin/tts -s=stop
+Restart=always
+KillMode=process
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target

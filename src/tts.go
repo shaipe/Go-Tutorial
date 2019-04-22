@@ -7,6 +7,7 @@ import (
 	"github.com/go-ini/ini"
 	"github.com/shaipe/tide/net"
 	"log"
+	"net/http"
 	"os"
 	"strings"
 	"time"
@@ -44,6 +45,7 @@ build后:
 var (
 	logFileName = flag.String("log", "tts.log", "Log file name")
 	confPath = flag.String("c", "tts.cnf", "配置文件路径: 给定运行的配置信息")
+	// oper = flag.String("s", "", "输入参数,用于重启或停止")
 )
 
 // 任务配置
@@ -90,8 +92,9 @@ func InitConfig(cnfPath string) []Task {
 
 		// time layout 是代表: go语言2006开始策划, 后面分别为: 1,2,3,4,5   2006-01-02 15:04:05.999999999 -0700 MST
 		tmStr := sec.Key("executeTime").String()
+		// fmt.Println(tmStr)
 		tmStr = time.Now().Format("2006-01-02") + " " + tmStr
-		//fmt.Println(tmStr)
+		// fmt.Println(tmStr)
 		tm, _ := time.Parse("2006-01-02 15:04:05", tmStr)
 
 		// 将post数据转换为字典
@@ -136,8 +139,9 @@ func LoopWorker(tasks []Task){
 
 }
 
+// 获取下次执行时间
 func getNext(task Task) time.Time {
-	fmt.Println(task)
+	//fmt.Println(task)
 	// 获取当前时间
 	now := time.Now()
 	// 默认执行时间为下次执行时间
@@ -158,13 +162,14 @@ func getNext(task Task) time.Time {
 			next = now.Add(time.Minute * time.Duration(task.Interval))
 		}
 	}
+	// fmt.Println(next)
 	return next
 }
 
 // 启动
 func start(task Task)  {
 	//fmt.Println(task.Name, task.Url)
-	//go func() {
+	go func() {
 		// fmt.Println("ewweewew")
 		for {
 			now := time.Now()
@@ -172,12 +177,13 @@ func start(task Task)  {
 			if next.Before(now) {
 				break
 			}
+			// go reqUrl(task.Name, task.Url, task.Method, task.Data)
 			log.Printf("next execute: %v", next)
 			t := time.NewTimer(next.Sub(now))
 			<- t.C
 			go reqUrl(task.Name, task.Url, task.Method, task.Data)
 		}
-	//}()
+	}()
 }
 
 
@@ -198,6 +204,11 @@ func main(){
 
 	flag.Parse()
 
+	//if *oper == "stop"{
+	//	os.Exit(1)
+	//} else if *oper == "reload"{
+	//}
+
 	// fmt.Println(*logFileName)
 	// return
 
@@ -211,13 +222,39 @@ func main(){
 	SetLog()
 
 	// 开始执行计划
-	LoopWorker(tasks)
+	go LoopWorker(tasks)
 
 	// 禁止 main 函数退出
-	defer func() { select {} }()
+	// defer func() { select {} }()
+
+	starSite()
 }
 
 
+
+func starSite() {
+	http.HandleFunc("/", indexHandler)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8081"
+		log.Printf("Defaulting to port %s", port)
+	}
+
+	log.Printf("Listening on port %s", port)
+	log.Printf("Open http://localhost:%s in the browser", port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
+}
+
+func indexHandler(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
+		return
+	}
+	_, err := fmt.Fprint(w, "Hello, World!")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+}
 
 
 // 设置日志记录
