@@ -177,7 +177,7 @@ func start(task Task)  {
 			if next.Before(now) {
 				break
 			}
-			// go reqUrl(task.Name, task.Url, task.Method, task.Data)
+			go reqUrl(task.Name, task.Url, task.Method, task.Data)
 			log.Printf("next execute: %v", next)
 			t := time.NewTimer(next.Sub(now))
 			<- t.C
