@@ -4,7 +4,7 @@ After=network.target nss-lookup.target
 
 [Service]
 Type=forking
-ExecStart=/bin/tts/tts -c=/bin/tts/tts.cnf -log=/bin/tts/tts1.log -s=true &
+ExecStart=/bin/tts/tts -c=/bin/tts/tts.cnf -log=/bin/tts/tts.log
 Restart=always
 KillMode=process
 RestartSec=1
