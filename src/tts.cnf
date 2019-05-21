@@ -1,8 +1,0 @@
-[task]
-name=overall
-url=http://das.366ec.net/das
-data={"databaseId":44,"appid":"tts_app","method":"sch.overall.exec"}
-method=POST
-repeat=day
-interval=1
-executeTime=00:05:00
