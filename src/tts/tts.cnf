@@ -1,6 +1,6 @@
 [task]
 name=overall
-url=http://das.366ec.net/das
+url=http://172.16.1.66:8000/das
 data={"databaseId":44,"appid":"tts_app","method":"sch.overall.exec"}
 method=POST
 repeat=minute

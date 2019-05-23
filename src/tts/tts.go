@@ -234,9 +234,9 @@ func main(){
 	go LoopWorker(tasks)
 
 	// 禁止 main 函数退出
-	// defer func() { select {} }()
+	defer func() { select {} }()
 
-	starSite()
+	// starSite()
 }
 
 
