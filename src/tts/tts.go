@@ -43,8 +43,8 @@ build后:
  */
 
 var (
-	logFileName = flag.String("log", "tts.log", "Log file name")
-	confPath = flag.String("c", "tts.cnf", "配置文件路径: 给定运行的配置信息")
+	logFileName = flag.String("log", "/bin/tts/tts.log", "Log file name")
+	confPath = flag.String("c", "/bin/tts/tts.cnf", "配置文件路径: 给定运行的配置信息")
 	startExecute = flag.Bool("s", false, "启动时是否执行一次操作")
 	// oper = flag.String("s", "", "输入参数,用于重启或停止")
 )
