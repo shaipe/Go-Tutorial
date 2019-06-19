@@ -1,9 +1,9 @@
 [Unit]
-Description=tts
+Description=alog
 After=network.target
 
 [Service]
-ExecStart=/bin/tts/tts &
+ExecStart=/bin/alog/alog &
 Restart=always
 KillMode=process
 RestartSec=on-failure
